@@ -31,28 +31,12 @@ public class DataAccess  {
 
 	ConfigXML c;
 
-	public DataAccess(boolean initializeMode)  {
-		
-		c=ConfigXML.getInstance();
+     public DataAccess(boolean initializeMode)  {
 		
 		System.out.println("Creating DataAccess instance => isDatabaseLocal: "+c.isDatabaseLocal()+" getDatabBaseOpenMode: "+c.getDataBaseOpenMode());
 
-		String fileName=c.getDbFilename();
-		if (initializeMode)
-			fileName=fileName+";drop";
+		open(initializeMode);
 		
-		if (c.isDatabaseLocal()) {
-			  emf = Persistence.createEntityManagerFactory("objectdb:"+fileName);
-			  db = emf.createEntityManager();
-		} else {
-			Map<String, String> properties = new HashMap<String, String>();
-			  properties.put("javax.persistence.jdbc.user", c.getUser());
-			  properties.put("javax.persistence.jdbc.password", c.getPassword());
-
-			  emf = Persistence.createEntityManagerFactory("objectdb://"+c.getDatabaseNode()+":"+c.getDatabasePort()+"/"+fileName, properties);
-
-			  db = emf.createEntityManager();
-    	   }
 	}
 
 	public DataAccess()  {	
@@ -243,7 +227,30 @@ public class DataAccess  {
 	}
 	
 
-	
+public void open(boolean initializeMode){
+		
+		System.out.println("Opening DataAccess instance => isDatabaseLocal: "+c.isDatabaseLocal()+" getDatabBaseOpenMode: "+c.getDataBaseOpenMode());
+
+		String fileName=c.getDbFilename();
+		if (initializeMode) {
+			fileName=fileName+";drop";
+			System.out.println("Deleting the DataBase");
+		}
+		
+		if (c.isDatabaseLocal()) {
+			  emf = Persistence.createEntityManagerFactory("objectdb:"+fileName);
+			  db = emf.createEntityManager();
+		} else {
+			Map<String, String> properties = new HashMap<String, String>();
+			  properties.put("javax.persistence.jdbc.user", c.getUser());
+			  properties.put("javax.persistence.jdbc.password", c.getPassword());
+
+			  emf = Persistence.createEntityManagerFactory("objectdb://"+c.getDatabaseNode()+":"+c.getDatabasePort()+"/"+fileName, properties);
+
+			  db = emf.createEntityManager();
+    	   }
+		
+	}
 	public void close(){
 		db.close();
 		System.out.println("DataBase closed");

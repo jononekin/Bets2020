@@ -32,6 +32,20 @@ public class BLFacadeImplementation  implements BLFacade {
 		
 	}
 	
+    public FacadeImplementation(DataAccess da)  {
+		
+		System.out.println("Creating FacadeImplementationWS instance with DataAccess parameter");
+		ConfigXML c=ConfigXML.getInstance();
+		
+		if (c.getDataBaseOpenMode().equals("initialize")) {
+			da.open(true);
+			da.initializeDB();
+			da.close();
+
+		}
+		dbManager=da;		
+	}
+	
 
 	/**
 	 * This method creates a question for an event, with a question text and the minimum bet
@@ -47,7 +61,7 @@ public class BLFacadeImplementation  implements BLFacade {
    public Question createQuestion(Event event, String question, float betMinimum) throws EventFinished, QuestionAlreadyExist{
 	   
 	    //The minimum bed must be greater than 0
-	    DataAccess dBManager=new DataAccess();
+		dbManager.open(false);
 		Question qry=null;
 		
 	    
@@ -70,7 +84,7 @@ public class BLFacadeImplementation  implements BLFacade {
 	 */
     @WebMethod	
 	public Vector<Event> getEvents(Date date)  {
-		DataAccess dbManager=new DataAccess();
+		dbManager.open(false);
 		Vector<Event>  events=dbManager.getEvents(date);
 		dbManager.close();
 		return events;
@@ -84,14 +98,19 @@ public class BLFacadeImplementation  implements BLFacade {
 	 * @return collection of dates
 	 */
 	@WebMethod public Vector<Date> getEventsMonth(Date date) {
-		DataAccess dbManager=new DataAccess();
+		dbManager.open(false);
 		Vector<Date>  dates=dbManager.getEventsMonth(date);
 		dbManager.close();
 		return dates;
 	}
 	
 	
-	
+	public void close() {
+		DataAccess dB4oManager=new DataAccess(false);
+
+		dB4oManager.close();
+
+	}
 
 	/**
 	 * This method invokes the data access to initialize the database with some events and questions.
@@ -99,9 +118,9 @@ public class BLFacadeImplementation  implements BLFacade {
 	 */	
     @WebMethod	
 	 public void initializeBD(){
-		DataAccess dBManager=new DataAccess();
-		dBManager.initializeDB();
-		dBManager.close();
+    	dbManager.open(false);
+		dbManager.initializeDB();
+		dbManager.close();
 	}
 
 }
