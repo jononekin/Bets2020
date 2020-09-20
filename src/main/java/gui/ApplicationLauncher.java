@@ -9,7 +9,7 @@ import javax.xml.namespace.QName;
 import javax.xml.ws.Service;
 
 import configuration.ConfigXML;
-
+import dataAccess.DataAccess;
 import businessLogic.BLFacade;
 import businessLogic.BLFacadeImplementation;
 
@@ -31,7 +31,6 @@ public class ApplicationLauncher {
 		a.setVisible(true);
 
 
-
 		try {
 			
 			BLFacade appFacadeInterface;
@@ -41,8 +40,14 @@ public class ApplicationLauncher {
 			
 			if (c.isBusinessLogicLocal()) {
 				
-			 appFacadeInterface=new BLFacadeImplementation();
-				
+				//In this option the DataAccess is created by FacadeImplementationWS
+				//appFacadeInterface=new BLFacadeImplementation();
+
+				//In this option, you can parameterize the DataAccess (e.g. a Mock DataAccess object)
+
+				DataAccess da= new DataAccess(c.getDataBaseOpenMode().equals("initialize"));
+				appFacadeInterface=new BLFacadeImplementation(da);
+
 				
 			}
 			
@@ -60,7 +65,7 @@ public class ApplicationLauncher {
 		        QName qname = new QName("http://businessLogic/", "BLFacadeImplementationService");
 		 
 		        Service service = Service.create(url, qname);
-		 
+
 		         appFacadeInterface = service.getPort(BLFacade.class);
 			} 
 			/*if (c.getDataBaseOpenMode().equals("initialize")) 
@@ -73,7 +78,8 @@ public class ApplicationLauncher {
 			
 		}catch (Exception e) {
 			a.jLabelSelectOption.setText("Error: "+e.toString());
-			a.jLabelSelectOption.setForeground(Color.RED);		
+			a.jLabelSelectOption.setForeground(Color.RED);	
+			
 			System.out.println("Error in ApplicationLauncher: "+e.toString());
 		}
 		//a.pack();

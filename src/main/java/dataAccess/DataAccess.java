@@ -29,7 +29,7 @@ public class DataAccess  {
 	protected static EntityManagerFactory emf;
 
 
-	ConfigXML c;
+	ConfigXML c=ConfigXML.getInstance();
 
      public DataAccess(boolean initializeMode)  {
 		

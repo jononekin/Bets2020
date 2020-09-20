@@ -19,20 +19,21 @@ import exceptions.QuestionAlreadyExist;
  */
 @WebService(endpointInterface = "businessLogic.BLFacade")
 public class BLFacadeImplementation  implements BLFacade {
+	DataAccess dbManager;
 
 	public BLFacadeImplementation()  {		
 		System.out.println("Creating BLFacadeImplementation instance");
 		ConfigXML c=ConfigXML.getInstance();
 		
 		if (c.getDataBaseOpenMode().equals("initialize")) {
-			DataAccess dbManager=new DataAccess(c.getDataBaseOpenMode().equals("initialize"));
+		    dbManager=new DataAccess(c.getDataBaseOpenMode().equals("initialize"));
 			dbManager.initializeDB();
 			dbManager.close();
 			}
 		
 	}
 	
-    public FacadeImplementation(DataAccess da)  {
+    public BLFacadeImplementation(DataAccess da)  {
 		
 		System.out.println("Creating FacadeImplementationWS instance with DataAccess parameter");
 		ConfigXML c=ConfigXML.getInstance();
@@ -69,9 +70,9 @@ public class BLFacadeImplementation  implements BLFacade {
 			throw new EventFinished(ResourceBundle.getBundle("Etiquetas").getString("ErrorEventHasFinished"));
 				
 		
-		 qry=dBManager.createQuestion(event,question,betMinimum);		
+		 qry=dbManager.createQuestion(event,question,betMinimum);		
 
-		dBManager.close();
+		dbManager.close();
 		
 		return qry;
    };
